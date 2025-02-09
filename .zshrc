@@ -1,5 +1,18 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# use pyenv version of python
+eval "$(pyenv init -)"
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/alexboyling/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/alexboyling/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/alexboyling/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/alexboyling/google-cloud-sdk/completion.zsh.inc'; fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
