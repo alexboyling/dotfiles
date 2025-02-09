@@ -26,6 +26,11 @@ autoload -U compinit && compinit
 
 zinit cdreplay -q
 
+# Customize prompt
+if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+  eval "$(oh-my-posh init zsh)"
+fi
+
 # Keybindings
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
