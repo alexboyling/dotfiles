@@ -2,8 +2,6 @@
 # Applied by setup.sh via `brew bundle`, which skips anything already
 # installed — re-running is free.
 
-tap "jandedobbeleer/oh-my-posh"
-
 brew "stow"   # for symlinking dotfiles (https://www.gnu.org/software/stow/)
 brew "fzf"    # command-line fuzzy finder (https://github.com/junegunn/fzf)
 brew "zoxide" # smarter cd command (https://github.com/ajeetdsouza/zoxide)
@@ -15,6 +13,9 @@ brew "gh"     # GitHub CLI, handles SSH auth (https://cli.github.com)
 brew "mise"   # version manager for python/node/etc, replaces pyenv+nvm (https://mise.jdx.dev)
 brew "zinit"  # zsh plugin manager, sourced in .zshrc (https://github.com/zdharma-continuum/zinit)
 
-brew "jandedobbeleer/oh-my-posh/oh-my-posh" # shell theming (https://ohmyposh.dev)
+# Deliberately the homebrew-core formula, not the official
+# jandedobbeleer/oh-my-posh tap: untrusted taps need an interactive
+# `brew trust` on new machines, which would break unattended setup
+brew "oh-my-posh" # prompt theming (https://ohmyposh.dev)
 
 cask "font-commit-mono-nerd-font"

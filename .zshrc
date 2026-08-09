@@ -41,7 +41,7 @@ zinit cdreplay -q
 # Prompt theming via oh-my-posh with the "pure" theme. Skipped in Apple
 # Terminal, which can't render the nerd-font glyphs themes rely on
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-	eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/pure.omp.json)"
+	eval "$(oh-my-posh init zsh --config "${HOMEBREW_PREFIX}/opt/oh-my-posh/themes/pure.omp.json")"
 fi
 
 # Ctrl-P/N: search history for commands starting with what's already typed
