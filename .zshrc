@@ -1,17 +1,20 @@
+# XDG config home for consistent cross-platform tool configuration
+export XDG_CONFIG_HOME="$HOME/.config"
 eval "$(/opt/homebrew/bin/brew shellenv)"
+export PATH="$HOME/.local/bin:$PATH"
+export EDITOR=micro
 
-# use pyenv version of python
-eval "$(pyenv init -)"
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+# mise — one version manager for python/node/etc (replaces pyenv + nvm).
+# No runtimes are installed until needed: `mise use -g python@latest` (or
+# node@latest) installs and sets a global default; per-project versions come
+# from .tool-versions/.python-version/.nvmrc files (https://mise.jdx.dev)
+eval "$(mise activate zsh)"
+
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/alexboyling/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/alexboyling/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/alexboyling/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/alexboyling/google-cloud-sdk/completion.zsh.inc'; fi
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
 
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -41,7 +44,7 @@ zinit cdreplay -q
 
 # Customize prompt
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-  eval "$(oh-my-posh init zsh)"
+	eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/pure.omp.json)"
 fi
 
 # Keybindings
@@ -49,7 +52,7 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
 # History
-HISTSIZE=1000
+HISTSIZE=50000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
@@ -69,7 +72,8 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='ls --color'
+alias ls='eza'
+alias cat='bat'
 
 # Shell integrations
 eval "$(fzf --zsh)"
