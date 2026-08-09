@@ -1,3 +1,5 @@
+# Ghostty terminal config — read from $XDG_CONFIG_HOME/ghostty/config.
+# `ghostty +list-themes` previews all built-in themes; cmd+shift+, reloads
 theme = tokyonight
-font-family = "CommitMono Nerd Font"
+font-family = "CommitMono Nerd Font"  # nerd font — oh-my-posh's glyphs need it
 font-size = 16

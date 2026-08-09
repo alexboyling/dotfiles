@@ -15,6 +15,8 @@
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
 
+# Strict mode: -e exits on any error, -u makes undefined variables errors,
+# pipefail makes a pipeline fail if any command in it fails (not just the last)
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -70,6 +72,8 @@ SSH_CONFIG_FILE="$HOME/.ssh/config"
 if ! grep -qs "Host github.com" "$SSH_CONFIG_FILE"; then
 	echo "Adding GitHub configuration to ~/.ssh/config..."
 	mkdir -p "$HOME/.ssh"
+	# <<- (vs <<) strips leading tabs from the heredoc, so the block can be
+	# indented here but is written flush-left to ~/.ssh/config
 	cat <<-EOL >>"$SSH_CONFIG_FILE"
 
 		Host github.com
@@ -112,6 +116,7 @@ else
 	if [ -z "${selection:-}" ]; then
 		echo "Nothing selected — skipping app installation."
 	else
+		# --file=- reads a Brewfile from stdin — i.e. just the lines picked above
 		echo "$selection" | brew bundle --file=-
 	fi
 fi

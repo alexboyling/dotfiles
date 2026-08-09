@@ -14,6 +14,8 @@
 # HTTPS), then hands off to setup.sh in the repo for everything else.
 # Safe to re-run: every step checks before acting.
 
+# Strict mode: -e exits on any error, -u makes undefined variables errors,
+# pipefail makes a pipeline fail if any command in it fails (not just the last)
 set -euo pipefail
 
 REPO_HTTPS="https://github.com/alexboyling/dotfiles.git"
