@@ -25,3 +25,8 @@ _darcs
 # Modified
 \.DS_Store
 
+# Setup scripts and package manifests — not dotfiles to symlink
+^/bootstrap\.sh
+^/setup\.sh
+^/Brewfile.*
+
