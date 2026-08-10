@@ -10,6 +10,8 @@ brew "eza"    # ls replacement (https://eza.rocks)
 brew "micro"  # nano replacement (https://micro-editor.github.io/index.html)
 brew "colima" # container runtimes (https://github.com/abiosoft/colima)
 brew "gh"     # GitHub CLI, handles SSH auth (https://cli.github.com)
+brew "mas"    # Mac App Store CLI, enables `mas` lines in Brewfiles — needs
+              # an App Store sign-in before those install (https://github.com/mas-cli/mas)
 brew "mise"   # version manager for python/node/etc, replaces pyenv+nvm (https://mise.jdx.dev)
 brew "zinit"  # zsh plugin manager, sourced in .zshrc (https://github.com/zdharma-continuum/zinit)
 

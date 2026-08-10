@@ -1,0 +1,44 @@
+# Apps — all optional, chosen interactively by setup.sh's picker.
+# Nothing is pre-selected: SPACE toggles one app, and typing a group name
+# then Ctrl-A selects a whole group (the ## headers become searchable
+# labels in the picker).
+#
+# mas lines install from the Mac App Store and need an App Store sign-in
+# before they will work; find ids with `mas search <name>`.
+
+## Dev tools
+cask "ghostty"            # terminal
+cask "visual-studio-code" # editor
+cask "zed"                # editor
+cask "cmux"               # coding-agent session manager
+cask "tableplus"          # gui for relational databases
+cask "figma"              # design
+cask "linear"             # project tracker
+
+## Browsers & privacy
+cask "google-chrome"
+cask "firefox"
+cask "adguard"     # system-wide ad blocking
+cask "adguard-vpn"
+
+## Productivity
+cask "raycast"   # spotlight replacement
+cask "1password" # password manager
+cask "obsidian"  # notes
+mas "Magnet", id: 441258766      # window manager
+mas "Amphetamine", id: 937984704 # keep-awake utility
+
+## Comms
+cask "slack"
+cask "whatsapp"
+
+## Media & reading
+cask "spotify"
+cask "vlc"  # plays anything
+cask "iina" # native mac video player
+mas "Reeder", id: 1529448980 # rss reader
+
+## Office
+mas "Microsoft Word", id: 462054704
+mas "Microsoft Excel", id: 462058435
+mas "Microsoft PowerPoint", id: 462062816

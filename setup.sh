@@ -4,13 +4,13 @@
 #
 # Usually invoked by bootstrap.sh on a fresh machine, but can be run
 # directly at any time:
-#   ./setup.sh [personal|work]
+#   ./setup.sh
 #
 # Steps:
 #   1. Install core utilities from Brewfile (always)
 #   2. Symlink dotfiles into $HOME with stow
 #   3. Authenticate with GitHub over SSH (gh handles key generation/upload)
-#   4. Install apps for the chosen profile, with a picker to opt in/out
+#   4. Pick apps to install from Brewfile.apps (nothing pre-selected)
 #
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
@@ -21,13 +21,6 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
-
-# Fail fast on a bad profile argument, before any slow work happens
-profile="${1:-}"
-if [ -n "$profile" ] && [ ! -f "$DOTFILES_DIR/Brewfile.$profile" ]; then
-	echo "❌ Unknown profile '$profile'. Available: $(echo Brewfile.* | sed 's/Brewfile\.//g')"
-	exit 1
-fi
 
 if ! command -v brew &>/dev/null; then
 	echo "❌ Homebrew is not installed. Run bootstrap.sh first."
@@ -94,31 +87,27 @@ if [[ "$origin_url" == https://github.com/* ]]; then
 	git remote set-url origin "$ssh_url"
 fi
 
-# 4. Profile apps — opt in/out via picker
-# The list of profiles is derived from the Brewfile.* files on disk, so
-# adding a new profile is just adding a Brewfile.<name>
-if [ -z "$profile" ]; then
-	profile=$(printf "%s\n" Brewfile.* | sed 's/^Brewfile\.//' |
-		fzf --height=~50% --layout=reverse \
-			--header="What kind of machine is this?" --prompt="profile > ") || true
-fi
+# 4. Apps — everything opt-in via picker, nothing pre-selected.
+# awk labels each entry with its most recent "## Group" heading, so picker
+# rows read:  Group  cask "name"  # comment
+# Typing filters on group names too, and Ctrl-A selects everything currently
+# matching — so "dev" + Ctrl-A selects the whole Dev tools group. cut strips
+# the label afterwards so raw Brewfile lines flow on to brew bundle.
+echo "📱 Choose apps to install..."
+selection=$(awk '
+	/^## / { group = substr($0, 4) }
+	/^[[:space:]]*(tap|brew|cask|mas)[[:space:]]/ { printf "%-20s\t%s\n", group, $0 }
+' "$DOTFILES_DIR/Brewfile.apps" |
+	fzf --multi --height=~100% --layout=reverse --delimiter='\t' \
+		--bind 'space:toggle' --bind 'ctrl-a:select-all' \
+		--header="SPACE toggle · group name + Ctrl-A selects group · ENTER installs · ESC skips" \
+		--prompt="apps > " | cut -f2) || true
 
-if [ -z "$profile" ]; then
-	echo "No profile chosen — skipping app installation."
+if [ -z "${selection:-}" ]; then
+	echo "Nothing selected — skipping app installation."
 else
-	echo "📱 Choose apps to install for the '$profile' profile..."
-	selection=$(grep -E '^\s*(tap|brew|cask|mas)\s' "$DOTFILES_DIR/Brewfile.$profile" |
-		fzf --multi --height=~100% --layout=reverse \
-			--bind 'start:select-all' --bind 'space:toggle' \
-			--header="SPACE to toggle, ENTER to install, ESC to skip" \
-			--prompt="apps ($profile) > ") || true
-
-	if [ -z "${selection:-}" ]; then
-		echo "Nothing selected — skipping app installation."
-	else
-		# --file=- reads a Brewfile from stdin — i.e. just the lines picked above
-		echo "$selection" | brew bundle --file=-
-	fi
+	# --file=- reads a Brewfile from stdin — i.e. just the lines picked above
+	echo "$selection" | brew bundle --file=-
 fi
 
 echo "Setup finished ✅"

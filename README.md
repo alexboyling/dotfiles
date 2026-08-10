@@ -17,9 +17,9 @@ This installs Xcode Command Line Tools and Homebrew, clones this repo to
 1. Installs core utilities from `Brewfile` (always)
 2. Symlinks the dotfiles into `$HOME` with stow
 3. Authenticates with GitHub over SSH (`gh` generates and uploads the key)
-4. Asks whether this is a `personal` or `work` machine, then shows the apps
-   from the matching `Brewfile.<profile>` in a picker — everything is
-   selected by default, SPACE toggles, ENTER installs
+4. Shows every app from `Brewfile.apps` in a grouped picker — nothing is
+   pre-selected; SPACE toggles an app, typing a group name then Ctrl-A
+   selects the whole group, ENTER installs
 
 Everything is safe to re-run; already-installed packages and completed steps
 are skipped.
@@ -29,7 +29,7 @@ are skipped.
 To re-apply after changing things:
 
 ```
-./setup.sh personal   # or: ./setup.sh work, or no argument to be prompted
+./setup.sh
 ```
 
 To only refresh the symlinks:
@@ -45,11 +45,13 @@ stow --restow --target="$HOME" .
 | `bootstrap.sh`      | Curl-able entry point for a fresh machine      |
 | `setup.sh`          | Main setup: brew bundle, stow, GitHub, apps    |
 | `Brewfile`          | Core utilities, always installed               |
-| `Brewfile.personal` | Apps for personal machines (opt in/out picker) |
-| `Brewfile.work`     | Apps for work machines (opt in/out picker)     |
+| `Brewfile.apps`     | All optional apps, grouped, chosen via picker  |
 | everything else     | Dotfiles, stowed into `$HOME`                  |
 
-Adding or removing an app is just editing the relevant Brewfile.
+Adding or removing an app is just editing the relevant Brewfile. Mac App
+Store apps work too, via [mas](https://github.com/mas-cli/mas): add a line
+like `mas "AppName", id: 12345` (find ids with `mas search <name>`; requires
+being signed in to the App Store).
 
 ## Using this as someone else
 
@@ -58,5 +60,3 @@ Fork the repo, edit the two variables at the top of `bootstrap.sh`
 raw URL. Everything else adapts: `setup.sh` derives the SSH remote from
 wherever the repo was actually cloned from, and the app lists are plain
 Brewfiles to edit.
-
-Reference: [Dreams of Autonomy](https://www.youtube.com/watch?v=y6XCebnB9gs)
