@@ -1,0 +1,11 @@
+# Global default runtimes — setup.sh materialises these with `mise install`.
+# Versions are deliberately fuzzy (resolved at install time); pin exact
+# versions here if reproducibility across machines ever starts to matter.
+# Per-project files (.tool-versions/.nvmrc/.python-version) override these.
+[tools]
+node = "lts"
+python = "latest"
+
+[settings]
+# let mise honour .nvmrc / .python-version files found in projects
+idiomatic_version_file_enable_tools = ["node", "python"]

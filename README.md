@@ -16,8 +16,10 @@ This installs Xcode Command Line Tools and Homebrew, clones this repo to
 
 1. Installs core utilities from `Brewfile` (always)
 2. Symlinks the dotfiles into `$HOME` with stow
-3. Authenticates with GitHub over SSH (`gh` generates and uploads the key)
-4. Shows every app from `Brewfile.apps` in a grouped picker — nothing is
+3. Installs global default runtimes (node, python) declared in
+   `.config/mise/config.toml`
+4. Authenticates with GitHub over SSH (`gh` generates and uploads the key)
+5. Shows every app from `Brewfile.apps` in a grouped picker — nothing is
    pre-selected; SPACE toggles an app, typing a group name then Ctrl-A
    selects the whole group, ENTER installs
 

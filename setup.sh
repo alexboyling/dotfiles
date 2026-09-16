@@ -9,8 +9,9 @@
 # Steps:
 #   1. Install core utilities from Brewfile (always)
 #   2. Symlink dotfiles into $HOME with stow
-#   3. Authenticate with GitHub over SSH (gh handles key generation/upload)
-#   4. Pick apps to install from Brewfile.apps (nothing pre-selected)
+#   3. Install global default runtimes declared in .config/mise/config.toml
+#   4. Authenticate with GitHub over SSH (gh handles key generation/upload)
+#   5. Pick apps to install from Brewfile.apps (nothing pre-selected)
 #
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
@@ -45,7 +46,13 @@ for f in $conflicts; do
 done
 stow --restow --target="$HOME" .
 
-# 3. GitHub authentication over SSH
+# 3. Global default runtimes (node, python) — declared in the stowed
+# .config/mise/config.toml, so this must run after stow. mise install
+# materialises whatever is missing and skips what's already there.
+echo "🧪 Installing global runtimes with mise..."
+mise install
+
+# 4. GitHub authentication over SSH
 if gh auth status &>/dev/null; then
 	echo "✅ Already authenticated with GitHub."
 else
@@ -87,7 +94,7 @@ if [[ "$origin_url" == https://github.com/* ]]; then
 	git remote set-url origin "$ssh_url"
 fi
 
-# 4. Apps — everything opt-in via picker, nothing pre-selected.
+# 5. Apps — everything opt-in via picker, nothing pre-selected.
 # awk labels each entry with its most recent "## Group" heading, so picker
 # rows read:  Group  cask "name"  # comment
 # Typing filters on group names too, and Ctrl-A selects everything currently

@@ -8,8 +8,8 @@ export PATH="$HOME/.local/bin:$PATH" # user-installed tools (pipx, uv, etc.)
 export EDITOR=micro                  # git commits, crontab -e, anything that asks
 
 # mise — one version manager for python/node/etc (replaces pyenv + nvm).
-# No runtimes are installed until needed: `mise use -g python@latest` (or
-# node@latest) installs and sets a global default; per-project versions come
+# Global defaults live in .config/mise/config.toml (stowed, so tracked in
+# the dotfiles repo and installed by setup.sh); per-project versions come
 # from .tool-versions/.python-version/.nvmrc files (https://mise.jdx.dev)
 eval "$(mise activate zsh)"
 
