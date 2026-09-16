@@ -38,10 +38,12 @@ zinit snippet OMZP::git
 autoload -U compinit && compinit
 zinit cdreplay -q
 
-# Prompt theming via oh-my-posh with the "pure" theme. Skipped in Apple
-# Terminal, which can't render the nerd-font glyphs themes rely on
+# oh-my-posh renders the prompt from a theme file. Themes are kept in the
+# repo (.config/oh-my-posh) rather than brew's install so they're tracked,
+# editable, and survive upgrades. Skipped in Apple Terminal, which can't
+# render the nerd-font glyphs
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-	eval "$(oh-my-posh init zsh --config "${HOMEBREW_PREFIX}/opt/oh-my-posh/themes/pure.omp.json")"
+	eval "$(oh-my-posh init zsh --config "$XDG_CONFIG_HOME/oh-my-posh/zen.toml")"
 fi
 
 # Ctrl-P/N: search history for commands starting with what's already typed
