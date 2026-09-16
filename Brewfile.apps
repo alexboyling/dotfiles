@@ -7,26 +7,34 @@
 # before they will work; find ids with `mas search <name>`.
 
 ## Dev tools
-cask "ghostty"            # terminal
-cask "visual-studio-code" # editor
-cask "zed"                # editor
-cask "cmux"               # coding-agent session manager
-cask "tableplus"          # gui for relational databases
-cask "figma"              # design
-cask "linear"             # project tracker
+cask "ghostty"                      # terminal
+cask "visual-studio-code"           # editor
+cask "zed"                          # editor
+cask "cmux"                         # coding-agent session manager
+cask "tableplus"                    # gui for relational databases
+cask "figma"                        # design
+cask "linear"                       # project tracker
 
 ## Browsers & privacy
 cask "google-chrome"
 cask "firefox"
-cask "adguard"     # system-wide ad blocking
+cask "adguard"                      # system-wide ad blocking
 cask "adguard-vpn"
 
 ## Productivity
-cask "raycast"   # spotlight replacement
-cask "1password" # password manager
-cask "obsidian"  # notes
-mas "Magnet", id: 441258766      # window manager
-mas "Amphetamine", id: 937984704 # keep-awake utility
+cask "raycast"                      # spotlight replacement
+cask "1password"                    # password manager
+cask "obsidian"                     # notes
+cask "notion"                       # docs, notes, project management
+mas "Amphetamine", id: 937984704    # keep-awake utility
+
+## Utilities
+cask "appcleaner"                   # uninstalls apps incl. their leftover files
+cask "jordanbaird-ice"              # Ice — menu bar manager
+cask "stats"                        # menu bar system monitor
+cask "shottr"                       # screenshots: annotate, scrolling capture, ocr
+cask "localsend"                    # cross-platform airdrop
+mas "The Unarchiver", id: 425424353 # opens rar/7z and friends
 
 ## Comms
 cask "slack"
@@ -34,9 +42,9 @@ cask "whatsapp"
 
 ## Media & reading
 cask "spotify"
-cask "vlc"  # plays anything
-cask "iina" # native mac video player
-mas "Reeder", id: 1529448980 # rss reader
+cask "vlc"                          # plays anything
+cask "iina"                         # native mac video player
+mas "Reeder", id: 1529448980        # rss reader
 
 ## Office
 mas "Microsoft Word", id: 462054704
