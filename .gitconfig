@@ -1,0 +1,10 @@
+# Machine-agnostic git config. Identity and commit signing live in
+# ~/.gitconfig.local — written by setup.sh's prompts, never committed —
+# because they differ per machine (personal vs work email, 1Password vs
+# plain SSH-key signing).
+[init]
+	defaultbranch = main
+
+[include]
+	# machine-specific: user.name / user.email + commit signing
+	path = ~/.gitconfig.local

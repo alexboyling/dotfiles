@@ -12,7 +12,8 @@
 #   3. Install global default runtimes declared in .config/mise/config.toml
 #   4. Authenticate with GitHub over SSH (gh handles key generation/upload)
 #   5. Pick apps to install from Brewfile.apps (nothing pre-selected)
-#   6. Offer to apply macOS defaults (trackpad, dock, finder, hotkeys)
+#   6. Prompt for git identity + signing, written to ~/.gitconfig.local
+#   7. Offer to apply macOS defaults (trackpad, dock, finder, hotkeys)
 #
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
@@ -118,7 +119,62 @@ else
 	echo "$selection" | brew bundle --file=-
 fi
 
-# 6. macOS defaults — personal system preferences. Prompted because they're
+# 6. Git identity + commit signing. Machine-specific (personal vs work
+# email, signing mechanism), so it lives in ~/.gitconfig.local — which the
+# stowed .gitconfig includes — and is prompted rather than committed.
+# Runs after the app picker so choosing 1Password signing on a machine
+# that just installed 1Password works. Only asked when the file doesn't
+# exist yet; edit or delete ~/.gitconfig.local to redo.
+if [ -f "$HOME/.gitconfig.local" ]; then
+	echo "✅ Git identity already configured (~/.gitconfig.local)."
+else
+	echo "🪪 Configuring git identity (written to ~/.gitconfig.local)..."
+	read -rp "  Git name: " git_name
+	read -rp "  Git email for this machine: " git_email
+	git config --file "$HOME/.gitconfig.local" user.name "$git_name"
+	git config --file "$HOME/.gitconfig.local" user.email "$git_email"
+
+	echo "  Commit signing (puts the Verified badge on GitHub commits):"
+	echo "    1) this machine's SSH key — reuses the key gh set up, fully automatic"
+	echo "    2) 1Password — signs with a vault key via Touch ID; needs 1Password"
+	echo "       installed, signed in, and its SSH integration enabled"
+	echo "    3) none"
+	read -rp "  Choose [1/2/3]: " signing
+	case "$signing" in
+	2)
+		# op-ssh-sign only works once 1Password is fully onboarded (app
+		# installed + signed in + SSH agent enabled in its settings); the
+		# install check below catches the scriptable part of that
+		if [ ! -d "/Applications/1Password.app" ]; then
+			echo "⚠️  1Password isn't installed — skipping signing. Install it"
+			echo "   (apps picker), then delete ~/.gitconfig.local and re-run setup."
+		else
+			# 1Password holds the private key; git only needs the PUBLIC half
+			# (copy it from the key's entry in 1Password)
+			read -rp "  Public signing key from 1Password (ssh-ed25519 ...): " signing_key
+			git config --file "$HOME/.gitconfig.local" gpg.format ssh
+			git config --file "$HOME/.gitconfig.local" gpg.ssh.program "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+			git config --file "$HOME/.gitconfig.local" user.signingkey "$signing_key"
+			git config --file "$HOME/.gitconfig.local" commit.gpgsign true
+		fi
+		;;
+	3)
+		echo "  Skipping commit signing."
+		;;
+	*)
+		# Default (1, or just Enter): GitHub registers auth and signing keys
+		# separately — uploading the same key again with --type signing is
+		# what makes commits made with it verify
+		git config --file "$HOME/.gitconfig.local" gpg.format ssh
+		git config --file "$HOME/.gitconfig.local" user.signingkey "$HOME/.ssh/id_ed25519.pub"
+		git config --file "$HOME/.gitconfig.local" commit.gpgsign true
+		gh ssh-key add "$HOME/.ssh/id_ed25519.pub" --type signing --title "$(hostname) signing" ||
+			echo "⚠️  Couldn't upload the signing key — add ~/.ssh/id_ed25519.pub as a signing key on GitHub manually."
+		;;
+	esac
+fi
+
+# 7. macOS defaults — personal system preferences. Prompted because they're
 # taste, not necessity; skipping leaves the machine untouched. Runs after
 # the app picker so the Raycast check below sees a just-installed Raycast.
 # All writes are idempotent — re-applying is harmless.

@@ -1,0 +1,11 @@
+# Global gitignore — git reads this via $XDG_CONFIG_HOME/git/ignore and
+# applies it on top of every repo's own .gitignore. Rule of thumb: only
+# artifacts of THIS machine belong here (OS and editor droppings); project
+# build outputs go in each repo's .gitignore so collaborators get them too.
+
+# macOS
+.DS_Store
+._*
+
+# Claude Code per-project local settings (machine-specific overrides)
+**/.claude/settings.local.json
