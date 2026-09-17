@@ -133,10 +133,25 @@ if [[ "$apply_defaults" =~ ^[Yy] ]]; then
 	# Dock: auto-hide
 	defaults write com.apple.dock autohide -bool true
 
+	# Dock: pin only System Settings (Finder and Trash are permanent
+	# fixtures, not pinned apps, so they survive the reset).
+	# NOTE: re-applying wipes any apps pinned since the last run
+	defaults write com.apple.dock persistent-apps -array
+	defaults write com.apple.dock persistent-apps -array-add "<dict>
+		<key>tile-data</key><dict><key>file-data</key><dict>
+			<key>_CFURLString</key><string>/System/Applications/System Settings.app</string>
+			<key>_CFURLStringType</key><integer>0</integer>
+		</dict></dict></dict>"
+
 	# Finder: new windows open in the home folder ("PfHm" = home; see
 	# NewWindowTarget for the other magic codes)
 	defaults write com.apple.finder NewWindowTarget -string "PfHm"
 	defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+	# Finder: show filename extensions, hidden dotfiles, and the path bar
+	defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+	defaults write com.apple.finder AppleShowAllFiles -bool true
+	defaults write com.apple.finder ShowPathbar -bool true
 
 	# Hand ⌘Space from Spotlight to Raycast — only when Raycast is actually
 	# installed, so a machine without it never loses the shortcut entirely.
