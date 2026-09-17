@@ -26,3 +26,10 @@ brew "zinit"   # zsh plugin manager, sourced in .zshrc (https://github.com/zdhar
 brew "oh-my-posh" # prompt theming (https://ohmyposh.dev)
 
 cask "font-commit-mono-nerd-font"
+
+# Claude Code — the @latest cask tracks releases as they ship (plain
+# claude-code is a ~week-delayed stable channel). Casks don't auto-update
+# on their own, so .zshrc sets CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1,
+# which has Claude Code run the brew upgrade itself in the background
+# (https://code.claude.com/docs/en/setup)
+cask "claude-code@latest"

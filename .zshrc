@@ -7,6 +7,10 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export PATH="$HOME/.local/bin:$PATH" # user-installed tools (pipx, uv, etc.)
 export EDITOR=micro                  # git commits, crontab -e, anything that asks
 
+# let the brew-installed Claude Code run its own brew upgrades in the
+# background (casks don't auto-update otherwise — see Brewfile)
+export CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1
+
 # mise — one version manager for python/node/etc (replaces pyenv + nvm).
 # Global defaults live in .config/mise/config.toml (stowed, so tracked in
 # the dotfiles repo and installed by setup.sh); per-project versions come

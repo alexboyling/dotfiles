@@ -26,6 +26,7 @@ cask "raycast"                      # spotlight replacement
 cask "1password"                    # password manager
 cask "obsidian"                     # notes
 cask "notion"                       # docs, notes, project management
+cask "claude"                       # anthropic's ai assistant (desktop)
 mas "Amphetamine", id: 937984704    # keep-awake utility
 
 ## Utilities
