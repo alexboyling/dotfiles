@@ -216,6 +216,10 @@ if [[ "$apply_defaults" =~ ^[Yy] ]]; then
 	defaults write com.apple.finder AppleShowAllFiles -bool true
 	defaults write com.apple.finder ShowPathbar -bool true
 
+	# Window tiling: no margins between tiled windows
+	# (System Settings → Desktop & Dock → "Tiled windows have margins")
+	defaults write com.apple.WindowManager EnableTiledWindowMargins -bool false
+
 	# Hand ⌘Space from Spotlight to Raycast — only when Raycast is actually
 	# installed, so a machine without it never loses the shortcut entirely.
 	# Spotlight's ⌘Space is symbolic hotkey 64; the XML is its definition
