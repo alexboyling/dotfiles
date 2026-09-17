@@ -27,6 +27,7 @@ cask "1password"                    # password manager
 cask "obsidian"                     # notes
 cask "notion"                       # docs, notes, project management
 cask "claude"                       # anthropic's ai assistant (desktop)
+cask "voiceink"                     # voice to text
 mas "Amphetamine", id: 937984704    # keep-awake utility
 
 ## Utilities
