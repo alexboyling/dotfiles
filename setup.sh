@@ -39,6 +39,13 @@ brew bundle --file="$DOTFILES_DIR/Brewfile"
 # brought over by Migration Assistant) makes stow abort. Detect conflicts
 # with a dry run (--no) first and move each offender aside as <name>.pre-stow
 # so the stow below succeeds and nothing is silently lost.
+# Pre-create ~/.config so stow links its children individually instead of
+# "folding" — symlinking the missing directory as a whole into the repo.
+# A folded ~/.config sends every app's writes (gh auth state, editor
+# databases, ...) straight into the working tree. NOTE: any future stowed
+# top-level directory needs the same pre-creation here.
+mkdir -p "$HOME/.config"
+
 echo "🔗 Symlinking dotfiles with stow..."
 conflicts=$(stow --no --restow --target="$HOME" . 2>&1 |
 	sed -n 's/.*existing target is not owned by stow: //p') || true
