@@ -12,6 +12,7 @@
 #   3. Install global default runtimes declared in .config/mise/config.toml
 #   4. Authenticate with GitHub over SSH (gh handles key generation/upload)
 #   5. Pick apps to install from Brewfile.apps (nothing pre-selected)
+#   6. Offer to apply macOS defaults (trackpad, dock, finder, hotkeys)
 #
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
@@ -115,6 +116,55 @@ if [ -z "${selection:-}" ]; then
 else
 	# --file=- reads a Brewfile from stdin — i.e. just the lines picked above
 	echo "$selection" | brew bundle --file=-
+fi
+
+# 6. macOS defaults — personal system preferences. Prompted because they're
+# taste, not necessity; skipping leaves the machine untouched. Runs after
+# the app picker so the Raycast check below sees a just-installed Raycast.
+# All writes are idempotent — re-applying is harmless.
+read -rp "🖥  Apply macOS defaults (tap-to-click, dock autohide, finder, ⌘Space → Raycast)? [y/N] " apply_defaults
+if [[ "$apply_defaults" =~ ^[Yy] ]]; then
+	# Trackpad: tap to click (all three writes needed: builtin trackpad,
+	# bluetooth trackpad, and the per-host global that System Settings reads)
+	defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+	defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+	defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+	# Dock: auto-hide
+	defaults write com.apple.dock autohide -bool true
+
+	# Finder: new windows open in the home folder ("PfHm" = home; see
+	# NewWindowTarget for the other magic codes)
+	defaults write com.apple.finder NewWindowTarget -string "PfHm"
+	defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+	# Hand ⌘Space from Spotlight to Raycast — only when Raycast is actually
+	# installed, so a machine without it never loses the shortcut entirely.
+	# Spotlight's ⌘Space is symbolic hotkey 64; the XML is its definition
+	# (space=49, cmd=1048576) with enabled=false. Raycast reads its hotkey
+	# from raycastGlobalHotkey (49 = space keycode).
+	if [ -d "/Applications/Raycast.app" ]; then
+		defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "
+			<dict>
+				<key>enabled</key><false/>
+				<key>value</key><dict>
+					<key>parameters</key><array>
+						<integer>32</integer><integer>49</integer><integer>1048576</integer>
+					</array>
+					<key>type</key><string>standard</string>
+				</dict>
+			</dict>"
+		defaults write com.raycast.macos raycastGlobalHotkey -string "Command-49"
+	fi
+
+	# Make it all take effect: restart Dock and Finder, and nudge the system
+	# to reload the hotkey table (otherwise it waits for logout)
+	killall Dock Finder
+	hotkey_reload="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings"
+	[ -x "$hotkey_reload" ] && "$hotkey_reload" -u
+	echo "✅ macOS defaults applied (trackpad change may need a log out)."
+else
+	echo "Skipping macOS defaults."
 fi
 
 echo "Setup finished ✅"
