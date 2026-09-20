@@ -22,9 +22,10 @@ This installs Xcode Command Line Tools and Homebrew, clones this repo to
 5. Shows every app from `Brewfile.apps` in a grouped picker — nothing is
    pre-selected; SPACE toggles an app, typing a group name then Ctrl-A
    selects the whole group, ENTER installs
-6. Prompts for git identity and commit signing (1Password, this machine's
-   SSH key, or none), written to the uncommitted `~/.gitconfig.local` —
-   after the picker so a just-installed 1Password counts
+6. Prompts for git identity and commit signing (this machine's SSH key by
+   default — registered on GitHub via a browser paste — or 1Password, or
+   none), written to the uncommitted `~/.gitconfig.local`; runs after the
+   picker so a just-installed 1Password counts
 7. Offers to apply macOS defaults (tap-to-click, dock auto-hide and
    cleared to Finder + System Settings, Finder tweaks, ⌘Space handed from
    Spotlight to Raycast) — or skip
@@ -51,7 +52,7 @@ stow --restow --target="$HOME" .
 | File                | Purpose                                        |
 | ------------------- | ---------------------------------------------- |
 | `bootstrap.sh`      | Curl-able entry point for a fresh machine      |
-| `setup.sh`          | Main setup: brew bundle, stow, GitHub, apps    |
+| `setup.sh`          | Main setup: packages, stow, GitHub, identity, apps, defaults |
 | `Brewfile`          | Core utilities, always installed               |
 | `Brewfile.apps`     | All optional apps, grouped, chosen via picker  |
 | everything else     | Dotfiles, stowed into `$HOME`                  |

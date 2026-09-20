@@ -122,8 +122,12 @@ selection=$(awk '
 if [ -z "${selection:-}" ]; then
 	echo "Nothing selected — skipping app installation."
 else
-	# --file=- reads a Brewfile from stdin — i.e. just the lines picked above
-	echo "$selection" | brew bundle --file=-
+	# --file=- reads a Brewfile from stdin — i.e. just the lines picked above.
+	# Soft-fail: one broken install (classically a mas app without an App
+	# Store sign-in) shouldn't abort the identity and defaults steps below —
+	# re-running setup converges whatever was missed
+	echo "$selection" | brew bundle --file=- ||
+		echo "⚠️  Some apps failed to install — fix the cause (e.g. sign in to the App Store for mas apps) and re-run setup."
 fi
 
 # 6. Git identity + commit signing. Machine-specific (personal vs work
@@ -169,22 +173,28 @@ else
 		echo "  Skipping commit signing."
 		;;
 	*)
-		# Default (1, or just Enter): GitHub registers auth and signing keys
-		# separately — uploading the same key again with --type signing is
-		# what makes commits made with it verify
-		git config --file "$HOME/.gitconfig.local" gpg.format ssh
-		git config --file "$HOME/.gitconfig.local" user.signingkey "$HOME/.ssh/id_ed25519.pub"
-		git config --file "$HOME/.gitconfig.local" commit.gpgsign true
-		# GitHub needs the same key registered a second time as a SIGNING
-		# key for commits to verify. Uploading via gh would mean holding
-		# the admin:ssh_signing_key oauth scope permanently for a one-off,
-		# so instead it's a browser paste — step 4's login means the
-		# browser is already signed in to GitHub
-		pbcopy <"$HOME/.ssh/id_ed25519.pub"
-		echo "  The public key is on your clipboard. In the page that opens:"
-		echo "  set 'Key type' to 'Signing Key' (NOT Authentication), paste, add."
-		open "https://github.com/settings/ssh/new"
-		read -rp "  Press [Enter] once the key has been added..."
+		# Default (1, or just Enter). The key exists on machines gh set up in
+		# step 4, but an auth predating this setup may have none or another
+		# name — bail cleanly rather than writing config pointing at nothing
+		if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
+			echo "⚠️  No ~/.ssh/id_ed25519.pub found — skipping signing. Generate"
+			echo "   one (e.g. 'gh auth login'), then delete ~/.gitconfig.local"
+			echo "   and re-run setup."
+		else
+			git config --file "$HOME/.gitconfig.local" gpg.format ssh
+			git config --file "$HOME/.gitconfig.local" user.signingkey "$HOME/.ssh/id_ed25519.pub"
+			git config --file "$HOME/.gitconfig.local" commit.gpgsign true
+			# GitHub needs the same key registered a second time as a SIGNING
+			# key for commits to verify. Uploading via gh would mean holding
+			# the admin:ssh_signing_key oauth scope permanently for a one-off,
+			# so instead it's a browser paste — step 4's login means the
+			# browser is already signed in to GitHub
+			pbcopy <"$HOME/.ssh/id_ed25519.pub"
+			echo "  The public key is on your clipboard. In the page that opens:"
+			echo "  set 'Key type' to 'Signing Key' (NOT Authentication), paste, add."
+			open "https://github.com/settings/ssh/new"
+			read -rp "  Press [Enter] once the key has been added..."
+		fi
 		;;
 	esac
 fi
@@ -193,7 +203,15 @@ fi
 # taste, not necessity; skipping leaves the machine untouched. Runs after
 # the app picker so the Raycast check below sees a just-installed Raycast.
 # All writes are idempotent — re-applying is harmless.
-read -rp "🖥  Apply macOS defaults (tap-to-click, dock autohide, finder, ⌘Space → Raycast)? [y/N] " apply_defaults
+echo "🖥  macOS defaults on offer:"
+echo "   • trackpad: tap to click"
+echo "   • dock: auto-hide"
+echo "   • dock: reset pinned apps to just Finder + System Settings"
+echo "   • finder: new windows open at home"
+echo "   • finder: show filename extensions, hidden files, and the path bar"
+echo "   • window tiling: no margins between tiled windows"
+echo "   • ⌘Space: Spotlight → Raycast (only if Raycast is installed)"
+read -rp "Apply? [y/N] " apply_defaults
 if [[ "$apply_defaults" =~ ^[Yy] ]]; then
 	# Trackpad: tap to click (all three writes needed: builtin trackpad,
 	# bluetooth trackpad, and the per-host global that System Settings reads)
