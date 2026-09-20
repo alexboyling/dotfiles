@@ -175,8 +175,16 @@ else
 		git config --file "$HOME/.gitconfig.local" gpg.format ssh
 		git config --file "$HOME/.gitconfig.local" user.signingkey "$HOME/.ssh/id_ed25519.pub"
 		git config --file "$HOME/.gitconfig.local" commit.gpgsign true
-		gh ssh-key add "$HOME/.ssh/id_ed25519.pub" --type signing --title "$(hostname) signing" ||
-			echo "⚠️  Couldn't upload the signing key — add ~/.ssh/id_ed25519.pub as a signing key on GitHub manually."
+		# GitHub needs the same key registered a second time as a SIGNING
+		# key for commits to verify. Uploading via gh would mean holding
+		# the admin:ssh_signing_key oauth scope permanently for a one-off,
+		# so instead it's a browser paste — step 4's login means the
+		# browser is already signed in to GitHub
+		pbcopy <"$HOME/.ssh/id_ed25519.pub"
+		echo "  The public key is on your clipboard. In the page that opens:"
+		echo "  set 'Key type' to 'Signing Key' (NOT Authentication), paste, add."
+		open "https://github.com/settings/ssh/new"
+		read -rp "  Press [Enter] once the key has been added..."
 		;;
 	esac
 fi
