@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 3,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "claude",
+          "style": "plain",
+          "template": "{{ $t := 0 }}{{ with .ContextWindow.CurrentUsage }}{{ $t = add .InputTokens .CacheCreationInputTokens .CacheReadInputTokens }}{{ end }}{{ printf \"%.1fk\" (divf $t 1000) }}{{ if gt .ContextWindow.ContextWindowSize 0 }} ({{ printf \"%.1f\" (mulf (divf $t .ContextWindow.ContextWindowSize) 100) }}%){{ end }}{{ if ge .FiveHourUsage 80 }} \u00b7 5h {{ .FiveHourUsage }}% (resets {{ (.FiveHourResetsIn.Round 60000000000).String | trimSuffix \"0s\" }}){{ end }}{{ if ge .SevenDayUsage 80 }} \u00b7 7d {{ .SevenDayUsage }}%{{ end }}"
+        }
+      ]
+    }
+  ]
+}
