@@ -9,3 +9,4 @@
 
 # Claude Code per-project local settings (machine-specific overrides)
 **/.claude/settings.local.json
+CLAUDE.local.md
