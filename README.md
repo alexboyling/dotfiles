@@ -29,6 +29,8 @@ This installs Xcode Command Line Tools and Homebrew, clones this repo to
 7. Offers to apply macOS defaults (tap-to-click, dock auto-hide and
    cleared to Finder + System Settings, Finder tweaks, ⌘Space handed from
    Spotlight to Raycast) — or skip
+8. Points Claude Code's status line at the stowed oh-my-posh config
+   (`.config/oh-my-posh/claude.omp.json`), unless one is already set
 
 Everything is safe to re-run; already-installed packages and completed steps
 are skipped.

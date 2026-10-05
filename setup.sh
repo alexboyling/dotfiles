@@ -14,6 +14,7 @@
 #   5. Pick apps to install from Brewfile.apps (nothing pre-selected)
 #   6. Prompt for git identity + signing, written to ~/.gitconfig.local
 #   7. Offer to apply macOS defaults (trackpad, dock, finder, hotkeys)
+#   8. Point Claude Code's status line at the stowed oh-my-posh config
 #
 # Safe to re-run: brew bundle skips installed packages, stow --restow
 # refreshes symlinks, and auth steps are skipped once configured.
@@ -273,6 +274,25 @@ if [[ "$apply_defaults" =~ ^[Yy] ]]; then
 	echo "✅ macOS defaults applied (trackpad change may need a log out)."
 else
 	echo "Skipping macOS defaults."
+fi
+
+# 8. Claude Code status line. ~/.claude/settings.json isn't stowed because
+# Claude Code rewrites it (e.g. via /config), which would replace the
+# symlink with a real file — so only the statusLine key is merged in, and
+# only when it's missing, leaving any existing status line alone.
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+mkdir -p "$HOME/.claude"
+[ -f "$CLAUDE_SETTINGS" ] || echo '{}' >"$CLAUDE_SETTINGS"
+if jq -e 'has("statusLine")' "$CLAUDE_SETTINGS" >/dev/null; then
+	echo "✅ Claude Code status line already configured."
+else
+	echo "📊 Setting Claude Code status line to oh-my-posh..."
+	jq '.statusLine = {
+		type: "command",
+		command: "oh-my-posh claude --config ~/.config/oh-my-posh/claude.omp.json",
+		padding: 0
+	}' "$CLAUDE_SETTINGS" >"$CLAUDE_SETTINGS.tmp"
+	mv "$CLAUDE_SETTINGS.tmp" "$CLAUDE_SETTINGS"
 fi
 
 echo "Setup finished ✅"
